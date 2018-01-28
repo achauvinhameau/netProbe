@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-04 20:39:53 alex>
+# Time-stamp: <2018-01-28 14:26:25 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -25,7 +25,6 @@
 """
 
 import logging
-import time
 import os
 
 from .probemain import probemain
@@ -67,7 +66,7 @@ class probe_watchdog(probemain):
             return
 
         try:
-            f = file(sWatchDogFile, 'w')
+            f = open(sWatchDogFile, 'w')
             f.write("A")
             f.close()
             logging.debug("reset watchdog")

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 17:19:14 alex>
+# Time-stamp: <2017-09-24 14:37:56 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -38,8 +38,8 @@ class elastic(output):
     def _setValueFromConfig(cls, _config, field, default=0, _min=-1000, _max=1000):
         if _config.__contains__(field):
             r = _config[field]
-            r = max(_min,r)
-            r = min(_max,r)
+            r = max(_min, r)
+            r = min(_max, r)
             return r
 
         return default
@@ -63,8 +63,16 @@ class elastic(output):
         if conf.__contains__('index'):
             sConfIndex = conf['index']
 
-        iConfShard = int(self._setValueFromConfig(conf, 'shard', default=3, _min=1, _max=12))
-        iConfReplica = int(self._setValueFromConfig(conf, 'replica', default=1, _min=0, _max=5))
+        iConfShard = int(self._setValueFromConfig(conf,
+                                                  'shard',
+                                                  default=3,
+                                                  _min=1,
+                                                  _max=12))
+
+        iConfReplica = int(self._setValueFromConfig(conf,
+                                                    'replica',
+                                                    default=1,
+                                                    _min=0, _max=5))
 
         try:
             self.es = Elasticsearch(host=self.es_server)

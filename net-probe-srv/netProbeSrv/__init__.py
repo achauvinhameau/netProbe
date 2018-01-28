@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:14:04 alex>
+# Time-stamp: <2018-01-18 20:38:10 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -44,11 +44,13 @@ class Config(object):
 
     SCHEDULER_VIEWS_ENABLED = False
 
+
 app = Flask(__name__)
 app.config.from_object(Config())
+app.config['MAX_CONTENT_LENGTH'] = 10000
+app.config['PERMANENT_SESSION_LIFETIME'] = 120
 
 scheduler = APScheduler()
 
 scheduler.init_app(app)
 scheduler.start()
-

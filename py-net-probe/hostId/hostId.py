@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-03 16:07:33 alex>
+# Time-stamp: <2018-01-28 14:31:45 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -44,16 +44,16 @@ class hostId(object):
         """
 
         try:
-            f = file('/proc/cpuinfo', 'r')
+            f = open('/proc/cpuinfo', 'r')
         except IOError as e:
-            print "ERROR accessing cpuinfo {}".format(e)
+            print("ERROR accessing cpuinfo {}".format(e))
             raise Exception('ERROR accessing cpuinfo')
 
         sCPU = sUniqueId
 
         aLines = f.readlines()
         f.close()
-        
+
         iFound = False
 
         for l in aLines:
@@ -74,7 +74,7 @@ class hostId(object):
                 r = re.match("processor[^:]+: [1-9]", l)
                 if r != None:
                     iFound = True
-                    
+
         self.id = hashlib.sha256(sCPU).hexdigest()
 
         logging.info("my id = {}".format(self.id))

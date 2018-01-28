@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-29 16:00:52 alex>
+# Time-stamp: <2017-09-24 16:15:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -58,6 +58,7 @@ def ws_results():
         return make_response(jsonify({"answer" : "KO", "reason":"probe not known"}), 404)
 
     probename = lDB.getNameForHost(host)
+    fields = lDB.getFieldsForHost(host)
 
     bCompressed = False
     if request.form.__contains__('compressed') and request.form['compressed'] == "yes":
@@ -88,6 +89,11 @@ def ws_results():
 
         for o in outputer:
             logging.debug("output to {}".format(o))
+            # check for fields
+            if fields != None:
+                ot = o.getType()
+                if ot in fields:
+                    d['data'].update(fields[ot])
             o.send(d)
 
     return make_response(jsonify({"answer" : "OK"}), 200)

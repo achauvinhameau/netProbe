@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 16:01:01 alex>
+# Time-stamp: <2018-01-28 14:20:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -81,15 +81,15 @@ class ipConf(object):
         """
         if 'addr' in self.aLink:
             return self.aLink['addr']
-        else:
-            return False
+
+        return False
 
     def getIfName(self):
         """
         return the interface name with the default route
         """
         return self.sInterface
-	
+
     def getIfIPv4(self):
         """
         return the IP version 4 address of the interface
@@ -97,8 +97,8 @@ class ipConf(object):
         """
         if 'addr' in self.aIfv4:
             return self.aIfv4['addr']
-        else:
-            return False
+
+        return False
 
     def getIfIPv6(self):
         """
@@ -107,20 +107,20 @@ class ipConf(object):
         """
         if 'addr' in self.aIfv6:
             return re.match('([^%]+)', self.aIfv6['addr']).group(1)
-        else:
-            return False
-	
+
+        return False
+
     def debug(self):
         """
         function to print the whole internal object
         """
-        print "** DEBUG **"
-        print " got default route : good"
-        print "  Interface : {}".format(self.sInterface)
+        print("** DEBUG **")
+        print(" got default route : good")
+        print("  Interface : {}".format(self.sInterface))
         if 'addr' in self.aIfv4:
-            print "  IPv4 : addr {}/{}".format(self.aIfv4['addr'],
-                                               self.aIfv4['netmask'])
+            print("  IPv4 : addr {}/{}".format(self.aIfv4['addr'],
+                                               self.aIfv4['netmask']))
         if 'addr' in self.aIfv6:
-            print "  IPv6 : addr {}/{}".format(self.aIfv6['addr'],
-                                               self.aIfv6['netmask'])
-        print "**********"
+            print("  IPv6 : addr {}/{}".format(self.aIfv6['addr'],
+                                               self.aIfv6['netmask']))
+        print("**********")

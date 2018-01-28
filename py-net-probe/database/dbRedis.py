@@ -1,7 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-05 20:34:15 alex>
-#
+# Time-stamp: <2018-01-28 14:31:24 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -32,21 +31,22 @@ import redis
 
 from .db import db
 
-# import pprint
-
 class dbRedis(db):
     """
     database class based on redis (db=1)
     """
 
     # -----------------------------------------
-    def __init__(self, host="localhost"):
+    def __init__(self, host="localhost", backoff_test=False):
         """
         constructor
         """
         db.__init__(self)
 
-        self.backOff = 1
+        if backoff_test:
+            self.backOff = -1
+        else:
+            self.backOff = 1
         self.dbRedisId = 1
 
         self.connect(host)
@@ -62,20 +62,24 @@ class dbRedis(db):
         while True:
             logging.info("connect to redis {}".format(host))
 
-            self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2, host=host)
+            self.db = redis.Redis(db=self.dbRedisId,
+                                  max_connections=1,
+                                  socket_timeout=2,
+                                  host=host)
 
             try:
                 self.db.ping()
                 break
 
-            except redis.ConnectionError, e:
+            except redis.ConnectionError as e:
                 self.backOff *= 1.5
-                if self.backOff > 30:
+                if self.backOff > 30 or self.backOff < 0:
                     self.db = None
                     raise Exception('redis not running? abort')
-                logging.error("redis : {}, next try in {:.2f}".format(e.message, self.backOff))
+                logging.error("redis : {}, next try in {:.2f}".format(e.message,
+                                                                      self.backOff))
                 time.sleep(self.backOff)
-         
+
         self.backOff = 1
 
     # -----------------------------------------
@@ -221,7 +225,6 @@ class dbRedis(db):
     # -----------------------------------------
     def decrRunningProbe(self):
         """ decrement counter of probes running (centralized in the redis PI server
-        
         """
 
         super(dbRedis, self).decrRunningProbe()
@@ -233,7 +236,6 @@ class dbRedis(db):
     # -----------------------------------------
     def isProbeRunning(self):
         """ is a probe already running? Usefull when asking for lock
-        
         """
 
         self.checkDB()

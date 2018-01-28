@@ -32,3 +32,5 @@ move to changelog once released
 * local lock between modules
 * watchdog
 * post boot script for system upgrade
+* version as int for easy comparison, upgrade path
+* add fields for specific outputer in configuration

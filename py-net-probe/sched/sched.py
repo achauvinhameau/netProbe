@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-21 17:03:27 alex>
+# Time-stamp: <2018-01-28 13:17:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -171,7 +171,8 @@ class sched(object):
         if next job is within the sec, wait for the delay and launch job,
            then returns 0
         """
-        if len(self.aSchedJobs) == 0:
+        # if len(self.aSchedJobs) == 0:
+        if not self.aSchedJobs:
             return 30
 
         # sort jobs by next iteration time

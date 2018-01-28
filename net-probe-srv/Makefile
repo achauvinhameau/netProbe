@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-04-30 14:11:19 alex>
+# Time-stamp: <2017-09-24 16:13:07 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -26,6 +26,7 @@ all:
 	@echo make flakes
 	@echo make clean
 	@echo make test
+	@echo make coverage
 
 lint: clean
 	pylint --rcfile=~/.pylint srv.py $(dirs:%=%/*.py)

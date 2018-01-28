@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-05 20:49:01 alex>
+# Time-stamp: <2017-09-24 14:25:05 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -58,16 +58,18 @@ def test_disconnect():
 
     assert False, "connection should be closed"
 
+
 # ---------------------------------------------
 def test_create_db_nohost():
     """ connection error to redis """
 
     try:
-        db = database.dbRedis.dbRedis(host="www.noredis.com")
+        db = database.dbRedis.dbRedis(host="192.168.16.13", backoff_test=True)
     except Exception:
         return
 
     assert False, "server found :)"
+
 
 # ---------------------------------------------
 def test_addjob():
@@ -78,7 +80,11 @@ def test_addjob():
         assert False
 
     db.cleanJob("test")
-    db.addJob("test", {'name' : 'test'})
+    db.addJob("test",
+              {
+                  'name': 'test'
+              }
+    )
 
     if db.dumpJob("test").next() != '{"name": "test"}':
         assert False
@@ -168,13 +174,13 @@ def test_dbTest():
     db = database.dbTest.dbTest()
     db.connect()
 
-    db.addJob("test", {'name' : 'test'})
+    db.addJob("test", {'name': 'test'})
 
     db.dumpJob("test")
 
     db.cleanJob("test")
 
-    db.setLock(1,2)
+    db.setLock(1, 2)
     db.releaseLock(1)
     db.checkLock()
     db.incrRunningProbe()

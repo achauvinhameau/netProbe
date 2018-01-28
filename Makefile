@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-06-03 16:53:52 alex>
+# Time-stamp: <2017-09-24 14:28:09 alex>
 #
 # PiProbe
 # Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
@@ -17,8 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+_none:
+	@echo make all
+	@echo make clean
+	@echo make test
+	@echo make coverage
+	@echo make version
+	@echo make cc
 
-all: version clean test cc
+all: version test cc
 	@echo make git-status
 
 clean:

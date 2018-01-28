@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-04 20:35:41 alex>
+# Time-stamp: <2018-01-28 14:15:53 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  client module for the probe system
 """
 
-__version__ = "1.9.2"
-__date__ = "05/06/17-20:49:04"
+__version__ = "1.9.6"
+__date__ = "28/01/18-14:33:15"
 __author__ = "Alex Chauvin"
 
 import time
@@ -48,20 +48,27 @@ from config import conf
 
 from probe import restartProbe, stopAllProbes, checkProbes, statsProbes
 
-aModules = ['watchdog', 'icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute', 'smb', 'dns']
+AMODULES = ['watchdog', 'icmp', 'health', 'http', 'iperf', 'temp',
+            'ntp', 'traceroute', 'smb', 'dns']
 
 # ----------- parse args
 try:
     import argparse
     parser = argparse.ArgumentParser(description='raspberry net probe system')
 
-    parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level', nargs='?', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
+    parser.add_argument('--log', '-l', metavar='level', default='INFO',
+                        type=str, help='log level', nargs='?',
+                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
 
-    parser.add_argument('--probe', '-p', metavar='probe_loglevel', default='ERROR', type=str, help='log level for probes', nargs=1, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
+    parser.add_argument('--probe', '-p', metavar='probe_loglevel',
+                        default='ERROR', type=str, help='log level for probes',
+                        nargs=1, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
 
-    parser.add_argument('--redis', '-r', metavar='none', help='redis server', default='localhost', nargs='?')
+    parser.add_argument('--redis', '-r', metavar='none', help='redis server',
+                        default='localhost', nargs='?')
 
-    parser.add_argument('--server', '-s', metavar='none', help='PiProbe server', default=None, nargs='?')
+    parser.add_argument('--server', '-s', metavar='none',
+                        help='PiProbe server', default=None, nargs='?')
 
     args = parser.parse_args()
 
@@ -118,13 +125,15 @@ stats.setVar("probe version", __version__)
 if os.environ.__contains__("REDIS_PORT_6379_TCP_ADDR"):
     args.redis = os.environ["REDIS_PORT_6379_TCP_ADDR"]
 
-if args.redis != None:
+if args.redis is not None:
     os.environ["PI_REDIS_SRV"] = args.redis
-    logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"]))
+    logging.info("set the redis server address to {}".
+                 format(os.environ["PI_REDIS_SRV"]))
 
 db = database.dbRedis.dbRedis(args.redis)
 
 db.cleanLock()
+
 
 # -----------------------------------------
 def serverConnect():
@@ -185,7 +194,8 @@ def serverConnect():
 
         # send identification to get id & certificate
         #
-        if srv.discover(hid.get(), ip.getIfIPv4(), ip.getIfIPv6(), __version__) is True:
+        if srv.discover(hid.get(), ip.getIfIPv4(),
+                        ip.getIfIPv6(), __version__) is True:
             bConnected = True
 
         if bConnected and srv.ping() is False:
@@ -234,6 +244,7 @@ def ping():
     if r.__contains__('action') and isinstance(r['action'], dict):
         action(r['action'])
 
+
 # -----------------------------------------
 def pushJobsToDB(jobName):
     """ change the job definition for the probe job in the db called only
@@ -249,6 +260,7 @@ def pushJobsToDB(jobName):
             del j['restart']
             db.addJob(jobName, j)
             stats.setJob(j)
+
 
 # -----------------------------------------
 def getConfig():
@@ -292,7 +304,7 @@ def getConfig():
         bOnPI = bool(os.path.exists("/home/pi/py-net-probe"))
         bOnARM = True
 
-        if os.path.isfile("/bin/uname"): 
+        if os.path.isfile("/bin/uname"):
             _s = check_output(["/bin/uname", "-m"])
             if re.match("arm", _s) is None:
                 if not bOnPI:
@@ -309,7 +321,8 @@ def getConfig():
                     logging.info("turning FS to RW")
                     call(["/bin/mount", "-o", "remount,rw", "/"])
 
-                f = file("/etc/hostname", 'w')
+                # f = file("/etc/hostname", 'w')
+                f = open("/etc/hostname", 'w')
                 f.write(newHostname)
                 f.close()
 
@@ -317,11 +330,11 @@ def getConfig():
                     logging.info("turning FS to RO")
                     call(["/bin/mount", "-o", "remount,ro", "/"])
 
+                # Ignore B605
                 os.system("/bin/hostname {}".format(newHostname))
             except IOError:
                 logging.error("accessing hostname file /etc/hostname")
 
-        
     # handle jobs
     for c in config['jobs']:
         # update job or create
@@ -340,17 +353,18 @@ def getConfig():
         if a['restart'] == 1:
             probeJobs[c['id']] = a
 
-            for m in aModules:
+            for m in AMODULES:
                 if a['job'] == m:
                     restart[m] = 1
 
-    if len(restart) == 0:
+    if not restart:
         return
 
-    for m in aModules:
+    for m in AMODULES:
         if m in restart:
             pushJobsToDB(m)
             restartProbe(m, probeProcess)
+
 
 # -----------------------------------------
 def mainLoop():
@@ -365,6 +379,7 @@ def mainLoop():
         f = scheduler.step()
         time.sleep(f)
 
+
 # -----------------------------------------
 def trap_signal(sig, _):
     """ trap all signals for stop """
@@ -377,6 +392,7 @@ def trap_signal(sig, _):
 
     bRunning = False
     bConnected = False
+
 
 #
 # -----------------------------------------
@@ -401,7 +417,7 @@ def action(a):
             job = _args['job']
             logging.info("restart job {} received from server".format(job))
 
-            if job in aModules:
+            if job in AMODULES:
                 restartProbe(job, probeProcess)
                 return
             else:
@@ -420,6 +436,7 @@ def action(a):
         return
 
     logging.info("action not handled {}".format(a))
+
 
 # -----------------------------------------
 def popResults(_db):
@@ -444,15 +461,19 @@ def popResults(_db):
 
     for _ in range(nb):
         r = _db.popResult()
-        if r != None:
+        if r is not None:
             j = json.loads(r)
-            stats.setLastRun(j['name'].lower(), j['date'])
-            a.append(j)
+            print(j)
+            if 'name' in j:
+                stats.setLastRun(j['name'].lower(), j['date'])
+                a.append(j)
 
-    if len(a) > 0:
+    # if len(a) > 0:
+    if a > 0:
         srv.pushResults(a)
 
     return _db.lenResultQueue()
+
 
 # -----------------------------------------
 def pushStats(_srv):
@@ -467,8 +488,8 @@ def pushStats(_srv):
 
     stats.push(_srv)
 
-# -----------------------------------------
 
+# -----------------------------------------
 signal.signal(signal.SIGTERM, trap_signal)
 signal.signal(signal.SIGINT, trap_signal)
 
@@ -484,25 +505,33 @@ while bRunning:
     getConfig()
 
     # job to refresh the configuration from the server every hour
-    scheduler.add("get configuration", conf.get("scheduler", "get_conf"), getConfig, None, 2)
+    scheduler.add("get configuration", conf.get("scheduler", "get_conf"),
+                  getConfig, None, 2)
 
     # push the results stored in the redis queue every 8 seconds
-    scheduler.add("push results", conf.get("scheduler", "push_results"), popResults, db, 2)
+    scheduler.add("push results", conf.get("scheduler", "push_results"),
+                  popResults, db, 2)
 
     # ping the server for connectivity check every minute
-    scheduler.add("ping server", conf.get("scheduler", "ping_server"), ping, None, 2)
+    scheduler.add("ping server", conf.get("scheduler", "ping_server"),
+                  ping, None, 2)
 
     # check if probe process has exited every 30"
-    scheduler.add("check probes process", conf.get("scheduler", "check_probes"), checkProbes, probeProcess)
+    scheduler.add("check probes process",
+                  conf.get("scheduler", "check_probes"),
+                  checkProbes, probeProcess)
 
     # push the stats of the probes every minute for the server
-    scheduler.add("stats probes", conf.get("scheduler", "stats_probes"), statsProbes, [probeProcess, stats], 2)
+    scheduler.add("stats probes", conf.get("scheduler", "stats_probes"),
+                  statsProbes, [probeProcess, stats], 2)
 
     # push the collected stats to the server every 5 minutes
-    scheduler.add("stats push", conf.get("scheduler", "stats_push"), pushStats, srv)
+    scheduler.add("stats push", conf.get("scheduler", "stats_push"),
+                  pushStats, srv)
 
     # ask for the upgrade every hour to the server
-    scheduler.add("upgrade", conf.get("scheduler", "upgrade"), srv.upgrade, None, 2)
+    scheduler.add("upgrade", conf.get("scheduler", "upgrade"),
+                  srv.upgrade, None, 2)
 
     mainLoop()
 

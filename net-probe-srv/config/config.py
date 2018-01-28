@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 18:32:01 alex>
+# Time-stamp: <2017-09-24 15:56:55 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -26,9 +26,10 @@
 
 import json
 import logging
-from output import outputer
 import output
+from output import outputer
 import time
+from .confOutputer import confOutputer
 
 # import pprint
 
@@ -48,6 +49,8 @@ class config(object):
         self.fwVersion = {}
         self.lastLoad = 0
         self.config_cache = -1
+
+        self.confOutputer = confOutputer()
 
         return
 
@@ -88,7 +91,7 @@ class config(object):
 
             for hkey in self.aHostTable:
                 h = self.aHostTable[hkey]
-                
+
                 if h.__contains__('probename') and h['probename'] == probename:
                     if h.__contains__('jobs'):
                         hjs = h['jobs']
@@ -113,7 +116,8 @@ class config(object):
             if hostData.__contains__('jobs'):
                 hostData['jobs'].append(newJob)
             else:
-                hostData['jobs'] = [ newJob ]
+                hostData['jobs'] = [newJob]
+
 
     # ----------------------------------------------------------
     def addHost(self, hostData):
@@ -128,10 +132,11 @@ class config(object):
                 self.applyTemplateToHost(hostData, t)
 
         _probeData = {
-            "jobs" : {},
+            "jobs": {},
             "probename": "unknown",
             "firmware": "current",
-            "hostname": "unknown_probe"
+            "hostname": "unknown_probe",
+            "fields": None
         }
 
         if hostData.__contains__('jobs'):
@@ -146,6 +151,10 @@ class config(object):
 
         if hostData.__contains__('hostname'):
             _probeData['hostname'] = hostData['hostname']
+
+        # if specific fields for outputer exists
+        if hostData.__contains__('fields'):
+            _probeData['fields'] = hostData['fields']
 
         if hostData.__contains__('probename'):
             _probeData['probename'] = hostData['probename']
@@ -210,59 +219,6 @@ class config(object):
             self.config_cache = int(confGlobal['config_cache'])
 
     # ----------------------------------------------------------
-    @classmethod
-    def addOutputer_Debug(cls, conf):
-        """add debug default outputer from the configuration
-
-        """
-        if conf['engine'] == "debug":
-            outputer.append(output.debug())
-
-    # ----------------------------------------------------------
-    @classmethod
-    def addOutputer_Ukn(cls, conf):
-        """check if the outputer is known
-
-        """
-
-        # create a fake object for checking method name
-        o = output.output()
-
-        if not o.checkMethodName(conf['engine']):
-            logging.error("unknown output method name '{}', possible values are : {}".format(conf['engine'], ", ".join(o.getMethodName())))
-            assert False, "bad output name"
-
-    # ----------------------------------------------------------
-    @classmethod
-    def addOutputer_Elastic(cls, conf):
-        """add elastic search outputer if present in the configuration
-
-        """
-        if conf['engine'] != "elastic":
-            return
-
-        if conf.__contains__('parameters'):
-            outputer.append(output.elastic(conf['parameters'][0]))
-        else:
-            logging.error("elastic output without parameters, exiting")
-            assert False, "missing parameters for elastic output"
-
-    # ----------------------------------------------------------
-    @classmethod
-    def addOutputer_Logstash(cls, conf):
-        """add logstash outputer if present in the configuration
-
-        """
-        if conf['engine'] != "logstash":
-            return
-
-        if conf.__contains__('parameters'):
-            outputer.append(output.logstash(conf['parameters'][0]))
-        else:
-            logging.error("logstash output without parameters, exiting")
-            assert False, "missing parameters for logstash output"
-
-    # ----------------------------------------------------------
     def confAddTemplates(self, conf):
         """ add templates from conf
 
@@ -315,7 +271,6 @@ class config(object):
 
         self.confReadGlobal(conf)
         self.confAddTemplates(conf)
-        self.confAddProbes(conf)
 
         # clean outputer array before inserting new configuration
         while (len(outputer) > 0):
@@ -324,12 +279,14 @@ class config(object):
         if conf.__contains__('output'):
             for outputConf in conf['output']:
                 if outputConf['active'] == "True":
-                    self.addOutputer_Debug(outputConf)
-                    self.addOutputer_Elastic(outputConf)
-                    self.addOutputer_Logstash(outputConf)
-                    self.addOutputer_Ukn(outputConf)
+                    self.confOutputer.addDebug(outputConf)
+                    self.confOutputer.addElastic(outputConf)
+                    self.confOutputer.addLogstash(outputConf)
+                    self.confOutputer.addUkn(outputConf)
         else:
             outputer.append(output.debug())
+
+        self.confAddProbes(conf)
 
         self.fileName = sFile
 
@@ -364,6 +321,23 @@ class config(object):
             logging.error("should not ask for unknown host in the configuration")
 
         return jobs
+
+    # ----------------------------------------------------------
+    def getFieldsForHost(self, sId):
+        """return the fileds configuration for the host
+
+        """
+
+        probename = sId
+        fields = None
+
+        if self.aHostTable.__contains__(sId):
+            fields = self.aHostTable[sId]['fields']
+            probename = self.aHostTable[sId]['probename']
+
+        logging.info("get fields for {}".format(probename))
+
+        return fields
 
     # ----------------------------------------------------------
     def getConfigForHost(self, sId):

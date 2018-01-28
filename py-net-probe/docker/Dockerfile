@@ -1,9 +1,10 @@
 # Docker file for testing the probe
 #
-# Time-stamp: <2017-05-01 16:36:17 alex>
+# Time-stamp: <2017-10-12 21:48:38 alex>
 #
 # docker build -t netprobe .
 # docker run -d netprobe
+#    --volume /tmp/py:/py
 #
 # --------------------------------------------------------------------
 # PiProbe

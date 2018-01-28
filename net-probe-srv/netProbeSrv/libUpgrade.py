@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-05 18:57:32 alex>
+# Time-stamp: <2017-10-12 21:38:21 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -28,6 +28,7 @@ import re
 
 import logging
 
+
 # -------------------------------------
 def versionToInt(sVersion):
     """return int value for the version for easy compare
@@ -48,6 +49,7 @@ def versionToInt(sVersion):
 
     return v
 
+
 # -------------------------------------
 def defNextVersion(sCurrentVersion, sNextVersion):
     """return next version to download
@@ -66,7 +68,7 @@ def defNextVersion(sCurrentVersion, sNextVersion):
     # 1.9.0 needs to be download as prereq to OS upgrade
     if iCurrentVersion < versionToInt('1.9.0'):
         return '1.9.0'
-    
+
     # 1.9.1 is OS upgrade
     if iCurrentVersion < versionToInt('1.9.1'):
         return '1.9.1'
@@ -76,4 +78,3 @@ def defNextVersion(sCurrentVersion, sNextVersion):
         return '1.9.2'
 
     return sNextVersion
-

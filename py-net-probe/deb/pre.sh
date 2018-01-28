@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Time-stamp: <2017-06-04 21:49:40 alex>
+# Time-stamp: <2017-10-12 22:13:02 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,15 +20,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+
 # ----------------------------
-rm -rf /home/pi/py-net-probe/*
+getVersion() {
+    VERSION=`awk -F'"' '/__version__ = / {print $2}' /home/pi/py-net-probe/main.py`
+}
 
-# v1.8.1
-# install dnspython
-pip install dnspython
 
-# v1.9.1
-# upgrade PI in post-boot
+# ----------------------------
+cleanFiles() {
+    rm -rf /home/pi/py-net-probe/*
+}
+
+
+# ----------------------------
+upgradeOS() {
 cat > /home/pi/py-net-probe/post-boot.sh <<EOF
 #!/bin/sh
 
@@ -54,10 +60,31 @@ apt-get -y autoremove
 
 apt-get -y install watchdog
 
-mount -o ro,remount /boot
-
 rm -f /home/pi/py-net-probe/post-boot.sh
+
+mount -o ro,remount /boot
 
 reboot
 EOF
+}
 
+# ---------------------------------------------------------------
+set VERSION=""
+getVersion
+
+cleanFiles
+
+# v1.8.1
+# install dnspython
+if [ "x$VERSION" = "x1.8.1" ]
+then
+    pip install dnspython
+fi
+
+
+# v1.9.1
+# upgrade PI in post-boot
+if [ "x$VERSION" = "x1.9.1" ]
+then
+    upgradeOS
+fi

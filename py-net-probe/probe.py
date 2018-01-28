@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 16:00:25 alex>
+# Time-stamp: <2017-08-31 22:43:04 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -28,6 +28,7 @@ import time
 import psutil
 #import pprint
 
+
 # -----------------------------------------
 def restartProbe(jobName, probeProcess):
     """
@@ -39,7 +40,7 @@ def restartProbe(jobName, probeProcess):
     # stops the process
     if probeProcess.__contains__(jobName):
         p = probeProcess[jobName]['handler']
-        
+
         # is the process stopped ?
         if p.poll() != None:
             logging.info("probe-{} already stopped".format(jobName))
@@ -55,7 +56,8 @@ def restartProbe(jobName, probeProcess):
                 if i <= 0:
                     break
             if i > 0:
-                logging.info("probe {} stopped in {:0.1f}s".format(jobName, (10-i)*0.5))
+                logging.info("probe {} stopped in {:0.1f}s"
+                             .format(jobName, (10-i)*0.5))
             else:
                 logging.error("probe {} not terminated".format(jobName))
                 logging.warning("need to do something on the probe")
@@ -65,12 +67,15 @@ def restartProbe(jobName, probeProcess):
     if p is None:
         logging.error("need to handle subprocess failure")
 
-    probeProcess[jobName] = {"handler" : p,
-                             "started" : time.time()}
+    probeProcess[jobName] = {
+        "handler": p,
+        "started": time.time()
+    }
 
     # pprint.pprint(probeProcess)
 
     logging.info("probe {} started".format(jobName))
+
 
 # -----------------------------------------
 def stopAllProbes(probeProcess):
@@ -83,13 +88,14 @@ def stopAllProbes(probeProcess):
     for jobName in probeProcess.keys():
         probe = probeProcess[jobName]
         p = probe['handler']
-        
+
         logging.info("send SIGTERM to probe {}".format(jobName))
         p.terminate()
 
         p.wait()
 
     logging.info("all probes are stoppped")
+
 
 # -----------------------------------------
 def checkProbe(jobName, probeProcess):
@@ -101,13 +107,15 @@ def checkProbe(jobName, probeProcess):
 
     if probeProcess.__contains__(jobName):
         p = probeProcess[jobName]['handler']
-        
+
         # is the process stopped ?
         if p.poll() != None:
-            logging.info("probe-{} stopped, code {}".format(jobName, p.returncode))
+            logging.info("probe-{} stopped, code {}"
+                         .format(jobName, p.returncode))
             return False
 
     return True
+
 
 # -----------------------------------------
 def checkProbes(probeProcess):
@@ -117,6 +125,7 @@ def checkProbes(probeProcess):
     for k in probeProcess.keys():
         if checkProbe(k, probeProcess) is False:
             restartProbe(k, probeProcess)
+
 
 # -----------------------------------------
 def statsProbes(a):
@@ -130,6 +139,7 @@ def statsProbes(a):
         if checkProbe(k, probeProcess) is True:
             statsProbe(k, probeProcess, stats)
 
+
 # -----------------------------------------
 def statsProbe(jobName, probeProcess, stats):
     """
@@ -140,9 +150,12 @@ def statsProbe(jobName, probeProcess, stats):
 
     if probeProcess.__contains__(jobName):
         pid = probeProcess[jobName]['handler'].pid
-        p = psutil.Process(pid) # may raise error NoSuchProcess
+        # may raise error NoSuchProcess
+        p = psutil.Process(pid)
 
-        stats.setVar("stats-{}-{}".format(jobName, "create_time"), int(p.create_time()))
+        stats.setVar("stats-{}-{}".format(jobName,
+                                          "create_time"),
+                     int(p.create_time()))
         stats.setVar("stats-{}-{}".format(jobName, "nice"), p.nice())
 
         a = p.io_counters()
@@ -155,13 +168,15 @@ def statsProbe(jobName, probeProcess, stats):
         stats.setVar("stats-{}-{}".format(jobName, "ctx_switch"), a[0]+a[1])
 
         stats.setVar("stats-{}-{}".format(jobName, "fds"), p.num_fds())
-        stats.setVar("stats-{}-{}".format(jobName, "threads"), p.num_threads())
-        
+        stats.setVar("stats-{}-{}".format(jobName, "threads"),
+                     p.num_threads())
+
         a = p.cpu_times()
         stats.setVar("stats-{}-{}".format(jobName, "cpu_times_user"), a[0])
         stats.setVar("stats-{}-{}".format(jobName, "cpu_times_system"), a[1])
 
-        stats.setVar("stats-{}-{}".format(jobName, "cpu_cores"), len(p.cpu_affinity()))
+        stats.setVar("stats-{}-{}".format(jobName, "cpu_cores"),
+                     len(p.cpu_affinity()))
 
         a = p.memory_info()
         stats.setVar("stats-{}-{}".format(jobName, "mem_rss"), a[0])
@@ -171,8 +186,11 @@ def statsProbe(jobName, probeProcess, stats):
         stats.setVar("stats-{}-{}".format(jobName, "mem_lib"), a[4])
         stats.setVar("stats-{}-{}".format(jobName, "mem_data"), a[5])
 
-        stats.setVar("stats-{}-{}".format(jobName, "mem_percent"), p.memory_percent())
+        stats.setVar("stats-{}-{}".format(jobName, "mem_percent"),
+                     p.memory_percent())
 
-        stats.setVar("stats-{}-{}".format(jobName, "connections"), len(p.connections()))
+        stats.setVar("stats-{}-{}".format(jobName, "connections"),
+                     len(p.connections()))
 
-        stats.setVar("stats-{}-{}".format(jobName, "open_files"), len(p.open_files()))
+        stats.setVar("stats-{}-{}".format(jobName, "open_files"),
+                     len(p.open_files()))

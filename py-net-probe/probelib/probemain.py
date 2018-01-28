@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-04 16:55:22 alex>
+# Time-stamp: <2018-01-28 13:15:56 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -300,7 +300,7 @@ class probemain(object):
     # -----------------------------------------
     def releaseLocalLock(self):
         """
-
+        clean lock
         """
 
         self.db.releaseLock("local")
@@ -309,4 +309,7 @@ class probemain(object):
     # -----------------------------------------    
     @classmethod
     def endJob(cls):
+        """
+        endJob
+        """
         return True
