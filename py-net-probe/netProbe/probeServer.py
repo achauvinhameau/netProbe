@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-04 20:36:39 alex>
+# Time-stamp: <2018-01-28 14:18:15 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -132,7 +132,7 @@ class probeServer(object):
                     'uid' : self.uid,
                     'hostId' : self.sHostId
                 }
-                r = self.session.post(self.sPingURL, data)
+                r = self.session.post(self.sPingURL, data, timeout=5)
 
                 # logging.info("status code = {}".format(r.status_code))
 
@@ -149,7 +149,7 @@ class probeServer(object):
                 else:
                     self.bServerAvail = False
                     return None
-                    
+
             else:
                 # self.session.get(self.sPingURL)
                 # delta = time.time() - now
@@ -243,7 +243,7 @@ class probeServer(object):
 
         # get main configuration
         try:
-            r = self.session.post(self.sSrvBaseURL+'/myConfig', data)
+            r = self.session.post(self.sSrvBaseURL+'/myConfig', data, timeout=5)
 
             if r.status_code == 200:
                 s = json.loads(r.text)
@@ -260,7 +260,7 @@ class probeServer(object):
             return None
 
         try:
-            r = self.session.post(self.sSrvBaseURL+'/myjobs', data)
+            r = self.session.post(self.sSrvBaseURL+'/myjobs', data, timeout=5)
             
             if r.status_code == 200:
                 s = json.loads(r.text)
@@ -320,7 +320,7 @@ class probeServer(object):
             data['data'] = b64encode(json.dumps(aResult[0]))
 
         try:
-            r = self.session.post(self.sSrvBaseURL+'/results', data)
+            r = self.session.post(self.sSrvBaseURL+'/results', data, timeout=5)
             
             if r.status_code == 200:
                 s = json.loads(r.text)
@@ -360,7 +360,7 @@ class probeServer(object):
             data = {
                 'uid' : self.uid
             }
-            r = self.session.post(self.sSrvBaseURL+'/upgrade', data, stream=True)
+            r = self.session.post(self.sSrvBaseURL+'/upgrade', data, stream=True, timeout=5)
             if r.status_code == 201:
                 logging.info("no need to upgrade")
                 return False

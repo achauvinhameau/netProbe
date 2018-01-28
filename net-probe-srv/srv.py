@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-09-24 15:34:49 alex>
+# Time-stamp: <2018-01-18 20:36:33 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  server module for the probe system
 """
 
-__version__ = "1.9.4"
-__date__ = "24/09/17-14:27:05"
+__version__ = "1.9.6"
+__date__ = "28/01/18-14:33:15"
 
 import logging
 import signal
@@ -123,11 +123,13 @@ from netProbeSrv import job, myConfig
 from netProbeSrv import pushAction, admin
 from netProbeSrv import upgrade
 
+
 # -----------------------------------------
 def trap_HUP_signal(sig, heap):
     """ trap signal for config reload """
 
     conf.reload()
+
 
 signal.signal(signal.SIGHUP, trap_HUP_signal)
 

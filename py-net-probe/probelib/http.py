@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-03 10:57:31 alex>
+# Time-stamp: <2018-01-28 13:14:36 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -102,7 +102,7 @@ class probe_http(probemain):
             if sReContent != "":
                 content = f.read()
                 if os.environ.__contains__("PI_RUN_ONCE"):
-                    print content
+                    print(content)
                 #print sReContent
                 r = re.search(sReContent, content)
 

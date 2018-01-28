@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-09-24 14:22:48 alex>
+# Time-stamp: <2018-01-28 14:31:24 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -71,7 +71,7 @@ class dbRedis(db):
                 self.db.ping()
                 break
 
-            except redis.ConnectionError, e:
+            except redis.ConnectionError as e:
                 self.backOff *= 1.5
                 if self.backOff > 30 or self.backOff < 0:
                     self.db = None

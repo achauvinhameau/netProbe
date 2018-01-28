@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-09-24 15:51:30 alex>
+# Time-stamp: <2018-01-28 14:15:53 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  client module for the probe system
 """
 
-__version__ = "1.9.4"
-__date__ = "24/09/17-14:27:05"
+__version__ = "1.9.6"
+__date__ = "28/01/18-14:33:15"
 __author__ = "Alex Chauvin"
 
 import time
@@ -321,7 +321,8 @@ def getConfig():
                     logging.info("turning FS to RW")
                     call(["/bin/mount", "-o", "remount,rw", "/"])
 
-                f = file("/etc/hostname", 'w')
+                # f = file("/etc/hostname", 'w')
+                f = open("/etc/hostname", 'w')
                 f.write(newHostname)
                 f.close()
 
@@ -356,7 +357,7 @@ def getConfig():
                 if a['job'] == m:
                     restart[m] = 1
 
-    if len(restart) == 0:
+    if not restart:
         return
 
     for m in AMODULES:
@@ -467,7 +468,8 @@ def popResults(_db):
                 stats.setLastRun(j['name'].lower(), j['date'])
                 a.append(j)
 
-    if len(a) > 0:
+    # if len(a) > 0:
+    if a > 0:
         srv.pushResults(a)
 
     return _db.lenResultQueue()

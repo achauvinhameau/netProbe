@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-14 18:16:41 alex>
+# Time-stamp: <2018-01-28 14:32:47 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -171,16 +171,16 @@ class probe_smb(probemain):
             dce.bind(srvs.MSRPC_UUID_SRVS)
             resp = srvs.hNetrSessionEnum(dce, NULL, NULL, 10)
 
-        except Exception, e:
+        except Exception as e:
             logging.error("getWho: {}".format(str(e)))
             return
 
         for session in resp['InfoStruct']['SessionInfo']['Level10']['Buffer']:
-            print "host: %15s, user: %5s, active: %5d, idle: %5d" % (
+            print("host: %15s, user: %5s, active: %5d, idle: %5d" % (
                 session['sesi10_cname'][:-1],
                 session['sesi10_username'][:-1], 
                 session['sesi10_time'],
-                session['sesi10_idle_time'])
+                session['sesi10_idle_time']))
 
     # --------------------------------------------------
     def getShares(self):
@@ -240,7 +240,7 @@ class probe_smb(probemain):
 
         try:
             self.tid = self.smbClient.connectTree(share)
-        except Exception, e:
+        except Exception as e:
             logging.error("useShare: {}".format(str(e)))
             return False
 
@@ -270,7 +270,7 @@ class probe_smb(probemain):
                                           shareMode=FILE_SHARE_READ | FILE_SHARE_WRITE)
 
             self.smbClient.closeFile(self.tid, fid)
-        except Exception, e:
+        except Exception as e:
             logging.error("cd: {}".format(str(e)))
             return False
 
@@ -490,7 +490,7 @@ class probe_smb(probemain):
             result["smb-step-{:02d}-Mbps".format(iStep)] = (offset * 8 / (time.time() - _ms))/1024000
 
             self.smbClient.closeFile(self.tid, fid)
-        except Exception, e:
+        except Exception as e:
             logging.error("open file: {}".format(str(e)))
             result["smb-step-{:02d}-error".format(iStep)] = "error in open file: {}".format(_step['file'])
 
