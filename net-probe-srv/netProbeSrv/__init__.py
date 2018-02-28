@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2018-02-28 21:03:29 alex>
+# Time-stamp: <2018-02-28 21:47:19 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -51,8 +51,8 @@ app = Flask(__name__)
 app.config.from_object(Config())
 app.config['MAX_CONTENT_LENGTH'] = 10000
 app.config['PERMANENT_SESSION_LIFETIME'] = 120
-app.config['SERVER_NAME'] = "{}:{}".format(str(conf.server_name),
-                                           str(conf.tcp_port))
+app.config['SERVER_NAME'] = "{}:{}".format(str(conf.getServerName()),
+                                           str(conf.getServerPort()))
 
 scheduler = APScheduler()
 
