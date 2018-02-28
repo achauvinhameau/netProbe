@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-09-24 15:56:55 alex>
+# Time-stamp: <2018-02-28 21:06:08 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -51,6 +51,9 @@ class config(object):
         self.config_cache = -1
 
         self.confOutputer = confOutputer()
+
+        self.server_name = "localhost"
+        self.tcp_port = 5000
 
         return
 
@@ -217,6 +220,12 @@ class config(object):
 
         if confGlobal.__contains__('config_cache'):
             self.config_cache = int(confGlobal['config_cache'])
+
+        if confGlobal.__contains__('tcp_port'):
+            self.tcp_port = int(confGlobal['tcp_port'])
+
+        if confGlobal.__contains__('server_name'):
+            self.server_name = str(confGlobal['server_name'])
 
     # ----------------------------------------------------------
     def confAddTemplates(self, conf):
@@ -433,6 +442,25 @@ class config(object):
             return self.fwVersion[version]
         else:
             return None
+
+
+    # ----------------------------------------------------------
+    def getServerName(self):
+        """returns the server name in the configuration file
+
+        """
+
+        return self.server_name
+
+
+    # ----------------------------------------------------------
+    def getServerPort(self):
+        """returns the tcp port used for the server, def 5000
+
+        """
+
+        return self.tcp_port
+
 
     # ----------------------------------------------------------
     def dump(self):

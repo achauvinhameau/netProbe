@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2018-01-18 20:38:10 alex>
+# Time-stamp: <2018-02-28 21:03:29 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -28,8 +28,10 @@ from liveDB import lDB
 
 from flask import Flask
 from flask_apscheduler import APScheduler
+from config import conf
 
 import logging
+
 
 class Config(object):
     JOBS = [
@@ -49,6 +51,8 @@ app = Flask(__name__)
 app.config.from_object(Config())
 app.config['MAX_CONTENT_LENGTH'] = 10000
 app.config['PERMANENT_SESSION_LIFETIME'] = 120
+app.config['SERVER_NAME'] = "{}:{}".format(str(conf.server_name),
+                                           str(conf.tcp_port))
 
 scheduler = APScheduler()
 

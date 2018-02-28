@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.9 - 28/02/2018
+-----
+* add server name and tcp port number in configuration file
+
+
 1.8 - 17/05/2017
 -----
 * changed hostId calculation, suppress IP => impact on existing installed probes

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2018-01-28 14:32:47 alex>
+# Time-stamp: <2018-02-28 21:19:02 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -231,7 +231,7 @@ class probe_smb(probemain):
             logging.error("No connection open")
             return False
 
-        if len(self.aShares) == 0:
+        if not self.aShares:
             self.getShares()
 
         if share not in self.aShares:
@@ -352,7 +352,7 @@ class probe_smb(probemain):
         if self.dceInfo.__contains__('licenses'):
             s += "\n DCE Info: {}\n".format(pprint.pformat(self.dceInfo))
 
-        if len(self.aShares) > 0:
+        if self.aShares:
             s += "\n shares = {}\n".format(pprint.pformat(self.aShares))
 
         return s

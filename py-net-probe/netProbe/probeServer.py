@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2018-01-28 14:18:15 alex>
+# Time-stamp: <2018-02-28 21:23:29 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -221,7 +221,7 @@ class probeServer(object):
             else:
                 logging.error("bad response from server, missing uid")
 
-        logging.error("error from server in discover {}:{}".format(r.status_code, s['reason']))
+        logging.error("error from server in discover {}:{}".format(r.status_code, s['error']))
         self.bServerAvail = False
         self.session.close()
         return False

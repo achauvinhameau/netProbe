@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2018-01-28 14:31:24 alex>
+# Time-stamp: <2018-02-28 21:16:10 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -171,7 +171,7 @@ class dbRedis(db):
 
         r = {
             "module": sModule,
-            "date" : time.time()
+            "date": time.time()
         }
 
         if sType == "local":
