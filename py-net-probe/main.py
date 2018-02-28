@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2018-01-28 14:15:53 alex>
+# Time-stamp: <2018-02-28 21:14:46 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  client module for the probe system
 """
 
-__version__ = "1.9.6"
-__date__ = "28/01/18-14:33:15"
+__version__ = "1.9.7"
+__date__ = "28/02/18-20:45:19"
 __author__ = "Alex Chauvin"
 
 import time
@@ -469,7 +469,7 @@ def popResults(_db):
                 a.append(j)
 
     # if len(a) > 0:
-    if a > 0:
+    if a:
         srv.pushResults(a)
 
     return _db.lenResultQueue()

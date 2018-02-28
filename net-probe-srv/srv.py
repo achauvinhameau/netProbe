@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2018-01-18 20:36:33 alex>
+# Time-stamp: <2018-02-28 21:47:54 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  server module for the probe system
 """
 
-__version__ = "1.9.6"
-__date__ = "28/01/18-14:33:15"
+__version__ = "1.9.7"
+__date__ = "28/02/18-20:45:19"
 
 import logging
 import signal
@@ -136,4 +136,4 @@ signal.signal(signal.SIGHUP, trap_HUP_signal)
 if __name__ == '__main__':
     app.debug = args.debug
     app.secret_key = "piprobe-{}".format(__version__)
-    app.run(host='0.0.0.0')
+    app.run(host=conf.getServerName(), threaded=True)

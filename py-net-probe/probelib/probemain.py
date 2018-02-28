@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2018-01-28 13:15:56 alex>
+# Time-stamp: <2018-02-28 21:39:57 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -132,6 +132,8 @@ class probemain(object):
                 self.bRunning = False
             else:
                 f = self.scheduler.step(self)
+                if (f>60):
+                    f = 60
                 time.sleep(f)
 
         logging.info("end probe {}".format(self.name))

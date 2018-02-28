@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-14 18:08:18 alex>
+# Time-stamp: <2018-02-28 21:29:53 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -26,6 +26,7 @@
 
 # import time
 import logging
+import os.path
 # import pprint
 
 from .probemain import probemain
@@ -64,9 +65,13 @@ class probe_temp(probemain):
         """
 
         result = {}
+        _fileName = '/sys/class/thermal/thermal_zone0/temp'
+
+        if not os.path.isfile(_fileName):
+            return
 
         # -------- Termperature from PI thermal sensor  --------------
-        tempC = int(open('/sys/class/thermal/thermal_zone0/temp').read()) / 1e3
+        tempC = int(open(_fileName).read()) / 1e3
         result['temp-pi-celsius'] = tempC
         result['temp-pi-fahrenheit'] = tempC*9/5+32
 
